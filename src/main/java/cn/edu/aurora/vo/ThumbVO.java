@@ -9,7 +9,7 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 
-@ApiModel("通过名称返回图片数据")
+@ApiModel(description = "通过名称返回图片数据")
 @Setter
 @Getter
 @ToString

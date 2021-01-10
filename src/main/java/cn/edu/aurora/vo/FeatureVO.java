@@ -9,7 +9,7 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 
-@ApiModel("相似图片查询返回极光数据")
+@ApiModel(description = "相似图片查询返回极光数据")
 @Setter
 @Getter
 @ToString

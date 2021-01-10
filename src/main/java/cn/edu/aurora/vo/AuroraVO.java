@@ -8,12 +8,11 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 import java.io.Serializable;
 
-
-@ApiModel("参数查询返回极光数据")
 @Setter
 @Getter
 @ToString
 @Accessors(chain = true)
+@ApiModel("参数查询返回极光数据")
 public class AuroraVO implements Serializable {
 
     @ApiModelProperty("图片名称(主键)")

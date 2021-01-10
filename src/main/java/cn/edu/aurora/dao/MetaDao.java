@@ -29,13 +29,12 @@ public class MetaDao {
      * @throws IOException
      */
     public List<Meta> findMetaWithOption(String start, String end, String band, String type) throws IOException {
-        Criteria criteria = new Criteria();
-        if (start != null) criteria.where("time").gte(start);
-        if (end != null) criteria.where("time").lte(end);
-        if (band != null) criteria.where("band").is(band);
-        if (band != null) criteria.where("type").is(type);
-
         Query query = new Query();
+        if (start != null) query.addCriteria(Criteria.where("time").gte(start));
+        if (end != null) query.addCriteria(Criteria.where("time").lte(end));
+        if (band != null) query.addCriteria(Criteria.where("band").is(band));
+        if (type != null) query.addCriteria(Criteria.where("type").is(type));
+
         List<Meta> metas = mongoTemplate.find(query, Meta.class);
 
         return metas;

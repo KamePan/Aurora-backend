@@ -8,7 +8,7 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 
-@ApiModel("keogram 查询返回图片数据")
+@ApiModel(description = "keogram 查询返回图片数据")
 @Setter
 @Getter
 @ToString

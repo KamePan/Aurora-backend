@@ -19,7 +19,7 @@ public class SwaggerConfig {
     public Docket createRestApi(){
         return new Docket(DocumentationType.SWAGGER_2).apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("cn.edu.aurora")) //过滤路径
+                .apis(RequestHandlerSelectors.basePackage("cn.edu.aurora.controller")) //过滤路径
                 .paths(PathSelectors.any()).build();
     }
 
