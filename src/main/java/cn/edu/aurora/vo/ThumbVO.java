@@ -9,25 +9,27 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 
-@ApiModel("相似图片查询返回极光数据")
+@ApiModel("通过名称返回图片数据")
 @Setter
 @Getter
 @ToString
 @Accessors(chain = true)
-public class FeatureVO implements Serializable {
+public class ThumbVO implements Serializable {
 
+    @ApiModelProperty("图片名称(主键)")
     private String name;
 
+    @ApiModelProperty("记录时间")
     private String time;
 
+    @ApiModelProperty("冠冕")
     private String band;
 
+    @ApiModelProperty("类型")
     private String manualtype;
 
+    @ApiModelProperty("Base64 编码缩略图")
     private String thumb;
-
-    @ApiModelProperty("相似度(海明距离)")
-    private Integer similarity;
 
     private static final long serialVersionUID = 1L;
 }

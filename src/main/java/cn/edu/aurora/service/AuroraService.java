@@ -5,11 +5,14 @@ import cn.edu.aurora.dao.ImageDao;
 import cn.edu.aurora.dao.MetaDao;
 import cn.edu.aurora.dao.ThumbDao;
 import cn.edu.aurora.entity.Feature;
+import cn.edu.aurora.entity.Image;
 import cn.edu.aurora.entity.Meta;
 import cn.edu.aurora.util.ImageUtil;
 import cn.edu.aurora.util.KeogramUtil;
 import cn.edu.aurora.vo.AuroraVO;
 import cn.edu.aurora.vo.FeatureVO;
+import cn.edu.aurora.vo.ImageVO;
+import cn.edu.aurora.vo.ThumbVO;
 import com.mongodb.DBObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,7 +46,6 @@ public class AuroraService {
     public List<AuroraVO> findAuroraWithOption(String start, String end, String band, String type) throws IOException {
         List<AuroraVO> auroraList = new ArrayList<>();
         List<Meta> metaList = metaDao.findMetaWithOption(start, end, band, type);
-        System.out.println(metaList);
         // 根据查询结果配置返回列表
         for (Meta meta: metaList) {
             AuroraVO aurora = new AuroraVO();
@@ -87,14 +89,12 @@ public class AuroraService {
             FeatureVO aurora = new FeatureVO();
             BASE64Encoder encoder = new BASE64Encoder();
             byte[] thumbBytes = thumbDao.findThumbByName(feature.getName()).getThumb().getData();
-            byte[] imageBytes = imageDao.findImageByName(feature.getName()).getRawpic().getData();
             Meta meta = metaDao.findMetaByName(feature.getName());
             aurora.setName(meta.getName())
                     .setBand(meta.getBand())
                     .setTime(meta.getTime())
                     .setManualtype(meta.getManualtype())
                     .setThumb(encoder.encode(thumbBytes))
-                    .setRawpic(encoder.encode(imageBytes))
                     .setSimilarity(ImageUtil.hammingDistance(srcfeat, feature.getFeature()));
             auroraList.add(aurora);
         }
@@ -122,4 +122,28 @@ public class AuroraService {
         return new BASE64Encoder().encode(keogrambyte);
     }
 
+    public ImageVO findImageByName(String name) {
+        Image image = imageDao.findImageByName(name);
+        ImageVO imageVO = new ImageVO();
+        imageVO.setImage(new BASE64Encoder().encode(image.getRawpic().getData()));
+        return imageVO;
+    }
+
+    public List<ThumbVO> findThumbWithOption(String start, String end, String band, String type) throws IOException {
+        List<ThumbVO> thumbVOList = new ArrayList<>();
+        List<Meta> metaList = metaDao.findMetaWithOption(start, end, band, type);
+        // 根据查询结果配置返回列表
+        for (Meta meta: metaList) {
+            ThumbVO thumbVO = new ThumbVO();
+            BASE64Encoder encoder = new BASE64Encoder();
+            byte[] thumbBytes = thumbDao.findThumbByName(meta.getName()).getThumb().getData();
+            thumbVO.setName(meta.getName())
+                    .setBand(meta.getBand())
+                    .setTime(meta.getTime())
+                    .setManualtype(meta.getManualtype())
+                    .setThumb(encoder.encode(thumbBytes));
+            thumbVOList.add(thumbVO);
+        }
+        return thumbVOList;
+    }
 }
