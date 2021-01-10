@@ -45,16 +45,16 @@ public class ImageController {
             fileOuputStream.write(pic);
         }*/
 
-        List<Thumb> thumbs = imageService.findAllThumbs();
+        /*List<Thumb> thumbs = imageService.findAllThumbs();
         for (Thumb thumb : thumbs) {
             byte[] pic = thumb.getThumb().getData();
             BASE64Encoder encoder = new BASE64Encoder();
             String encodedPic = encoder.encode(pic);
             System.out.println(encodedPic);
-            //File file = new File(picDest + thumb.getName() + ".jpg");
-            //FileOutputStream fileOuputStream = new FileOutputStream(file);
-            //fileOuputStream.write(pic);
-        }
+            File file = new File(picDest + thumb.getName() + ".jpg");
+            FileOutputStream fileOuputStream = new FileOutputStream(file);
+            fileOuputStream.write(pic);
+        }*/
 
         return null;//JSONArray.parseArray(JSON.toJSONString(images));
     }

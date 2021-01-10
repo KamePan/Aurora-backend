@@ -1,5 +1,6 @@
 package cn.edu.aurora.dao;
 
+import cn.edu.aurora.entity.Image;
 import cn.edu.aurora.entity.Thumb;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;

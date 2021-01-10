@@ -4,16 +4,14 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import org.bson.types.Binary;
 
 import java.io.Serializable;
-import java.util.List;
 
 @Setter
 @Getter
 @ToString
 @Accessors(chain = true)
-public class AuroraVO implements Serializable {
+public class FeatureVO implements Serializable {
 
     private String name;
 
@@ -28,6 +26,8 @@ public class AuroraVO implements Serializable {
     private String rawpic;
 
     private String thumb;
+
+    private Integer similarity;
 
     private static final long serialVersionUID = 1L;
 }

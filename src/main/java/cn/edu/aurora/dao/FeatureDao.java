@@ -29,31 +29,7 @@ public class FeatureDao {
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    /**
-     *
-     * @param pic 图片字节流参数
-     * @return 根据海明距离排序以后的 feature 列表
-     * @throws IOException
-     */
-    public List<Feature> findFeatureLikeSomePic(byte[] pic) throws IOException {
-        String srcfeat = ImageUtil.produceFingerPrint(pic);
-        List<Feature> features = findAllFeatures();
-        // 根据相关值进行排序
-        features.sort(Comparator.comparingInt((Feature o) -> ImageUtil.hammingDistance(srcfeat, o.getFeature())));
-        int size = features.size();
-        for (int i = size - 1; i >= 0; i--) {
-            if (ImageUtil.hammingDistance(srcfeat, features.get(i).getFeature()) >= 10) { //大于 10 说明完全不匹配
-                features.remove(features.get(i));
-            }
-        }
-        for (Feature feature : features) {
-            System.out.println(ImageUtil.hammingDistance(srcfeat, feature.getFeature()));
-        }
-        return features;
-    }
-
-
-    private List<Feature> findAllFeatures() {
+    public List<Feature> findAllFeatures() {
         List<Feature> features = mongoTemplate.findAll(Feature.class);
         return features;
     }
