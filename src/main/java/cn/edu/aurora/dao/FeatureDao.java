@@ -16,9 +16,4 @@ public class FeatureDao {
         List<Feature> features = mongoTemplate.findAll(Feature.class);
         return features;
     }
-
-    public void insertFeature(Feature feature) {
-        System.out.println(feature);
-        mongoTemplate.insert(feature, "Aurora.Feature");
-    }
 }

@@ -152,7 +152,7 @@ public class AuroraService {
         return thumbVOList;
     }
 
-    public List<ImageVO> findImageWithOption(String start, String end, String band, String type) throws IOException {
+    public List<ImageVO> findImageWithOption(String start, String end, String band) throws IOException {
         List<ImageVO> imageVOList = new ArrayList<>();
         List<Meta> metaList = metaDao.findMetaNeedsMarkedWithOption(start, end, band);
         // 根据查询结果配置返回列表
@@ -170,20 +170,7 @@ public class AuroraService {
         return imageVOList;
     }
 
-    public void insertImage(Image image) {
-        imageDao.insertImage(image);
+    public void updateMetaByName(Meta meta) {
+        metaDao.updateMetaByName(meta);
     }
-
-    public void insertThumb(Thumb thumb) {
-        thumbDao.insertThumb(thumb);
-    }
-
-    public void insertFeature(Feature feature) {
-        featureDao.insertFeature(feature);
-    }
-
-    public void insertMeta(Meta meta) {
-        metaDao.insertMeta(meta);
-    }
-
 }

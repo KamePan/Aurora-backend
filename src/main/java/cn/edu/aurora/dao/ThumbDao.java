@@ -19,10 +19,4 @@ public class ThumbDao {
         Thumb thumb = mongoTemplate.findOne(query, Thumb.class);
         return thumb;
     }
-
-    public void insertThumb(Thumb thumb) {
-        System.out.println(thumb);
-        mongoTemplate.insert(thumb, "Aurora.Thumb");
-    }
-
 }

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
@@ -59,7 +60,7 @@ public class MetaDao {
         }
         query.addCriteria(criteria);
         if (band != null) query.addCriteria(Criteria.where("band").is(band));
-        query.addCriteria(Criteria.where("type").exists(false));
+        query.addCriteria(Criteria.where("type").is("0"));
 
         List<Meta> metas = mongoTemplate.find(query, Meta.class);
 
@@ -71,14 +72,11 @@ public class MetaDao {
         return mongoTemplate.findOne(query, Meta.class);
     }
 
-    public void insertMeta(Meta meta) {
+    public void updateMetaByName(Meta meta) {
+        Query query = new Query(Criteria.where("name").is(meta.getName()));
+        Update update = new Update().set("manualtype", meta.getManualtype());
         System.out.println(meta);
-        Meta insert = mongoTemplate.insert(meta, "Aurora.Meta");
-        System.out.println(insert);
-        System.out.println(mongoTemplate.find(new Query(Criteria.where("name").is("123")), Meta.class));
-        //System.out.println(mongoTemplate.findOne(new Query(Criteria.where("name").is("123")), Meta.class));
-        //System.out.println(mongoTemplate.findOne(new Query(Criteria.where("name").is("123")), Meta.class));
-
+        mongoTemplate.upsert(query, update, "Aurora.Meta");
+        System.out.println(mongoTemplate.find(query, Meta.class));
     }
-
 }

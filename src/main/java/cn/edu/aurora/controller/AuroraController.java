@@ -33,29 +33,6 @@ public class AuroraController {
     @Autowired
     private AuroraService auroraService;
 
-/*    @ApiOperation("通过参数返回相应的极光数据")
-    @GetMapping("/meta")
-    public JSONArray findAuroraWithOptions(@RequestParam(required = false) String start,
-                                           @RequestParam(required = false) String end,
-                                           @RequestParam(required = false) String band,
-                                           @RequestParam(required = false) String type) {
-        // 需要返回的数据包括 meta、原图、缩略图、Keogram 生成的图
-        List<AuroraVO> auroraList = null;
-        try {
-            auroraList = auroraService.findAuroraWithOption(start, end, band, type);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return JSONArray.parseArray(JSON.toJSONString(auroraList));
-    }*/
-
-    @PostMapping("/test")
-    public void test() {
-        Meta meta = new Meta();
-        meta.setName("123").setBand("V").setManualtype("0").setTime("1231231412");
-        auroraService.insertMeta(meta);
-    }
-
 
     @ApiOperation("通过参数返回相应的极光缩略图")
     @GetMapping("/thumb")
@@ -95,12 +72,11 @@ public class AuroraController {
     @GetMapping("/image")
     public JSONArray findImageWithOptions(@RequestParam(required = false) String start,
                                           @RequestParam(required = false) String end,
-                                          @RequestParam(required = false) String band,
-                                          @RequestParam(required = false) String type) {
+                                          @RequestParam(required = false) String band) {
         // 需要返回的数据包括 meta、原图、缩略图、Keogram 生成的图
         List<ImageVO> imageVOList = null;
         try {
-            imageVOList = auroraService.findImageWithOption(start, end, band, type);
+            imageVOList = auroraService.findImageWithOption(start, end, band);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -144,9 +120,9 @@ public class AuroraController {
     }
 
     @ApiOperation("标记极光图片类型")
-    @PutMapping("/name/{name}")
-    public JSONObject updateAurora(@PathVariable String name) {
-
+    @PutMapping
+    public JSONObject updateMetaByName(@RequestBody Meta meta) {
+        auroraService.updateMetaByName(meta);
         return null;
     }
 }
