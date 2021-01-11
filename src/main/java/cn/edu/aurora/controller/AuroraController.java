@@ -1,5 +1,6 @@
 package cn.edu.aurora.controller;
 
+import cn.edu.aurora.dao.MetaDao;
 import cn.edu.aurora.entity.Feature;
 import cn.edu.aurora.entity.Image;
 import cn.edu.aurora.entity.Meta;
@@ -12,10 +13,15 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.bson.types.Binary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -43,6 +49,12 @@ public class AuroraController {
         return JSONArray.parseArray(JSON.toJSONString(auroraList));
     }*/
 
+    @PostMapping("/test")
+    public void test() {
+        Meta meta = new Meta();
+        meta.setName("123").setBand("V").setManualtype("0").setTime("1231231412");
+        auroraService.insertMeta(meta);
+    }
 
 
     @ApiOperation("通过参数返回相应的极光缩略图")
@@ -79,8 +91,24 @@ public class AuroraController {
         return (JSONObject) JSON.toJSON(keogramVO);
     }
 
+    @ApiOperation("通过参数返回相应的极光数据图")
+    @GetMapping("/image")
+    public JSONArray findImageWithOptions(@RequestParam(required = false) String start,
+                                          @RequestParam(required = false) String end,
+                                          @RequestParam(required = false) String band,
+                                          @RequestParam(required = false) String type) {
+        // 需要返回的数据包括 meta、原图、缩略图、Keogram 生成的图
+        List<ImageVO> imageVOList = null;
+        try {
+            imageVOList = auroraService.findImageWithOption(start, end, band, type);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return JSONArray.parseArray(JSON.toJSONString(imageVOList));
+    }
+
     @ApiOperation("通过图片字节流查询相似度高的极光数据")
-    @GetMapping("/feature")
+    @PostMapping("/feature")
     public JSONArray findAuroraLikeSomePic(@RequestParam MultipartFile pic) {
         List<FeatureVO> featureVOList = null;
         try {
@@ -107,31 +135,7 @@ public class AuroraController {
             byte[] bytes = pic.getBytes();
             String name = originalFilename.substring(0, originalFilename.lastIndexOf('.'));
             // 得到图片的名字，如果名字不符合规范，则抛出异常，否则解析改名字
-            System.out.println(name);
-
-            /*Image image = new Image()
-                    .setName(name)
-                    .setRawpic(bytes);
-            auroraService.insertImage(image);
-
-            Thumb thumb = new Thumb()
-                    .setName(name)
-                    .setThumb(ImageUtil.thumb());
-            auroraService.insertThumb(thumb);
-
-            Feature feature = new Feature()
-                    .setName(name)
-                    .setFeature(ImageUtil.produceFingerPrint(bytes));
-            auroraService.insertFeature(feature);
-
-            String band = name.substring(7, 8);
-            String time = name.substring(1, 7) + "123456";
-            Meta meta = new Meta()
-                    .setName(name)
-                    .setBand(band)
-                    .setTime(time);
-            auroraService.insertMeta(meta);*/
-
+            ImageUtil.handleImage(bytes, name);
         } catch (IOException e) {
             e.printStackTrace();
         }

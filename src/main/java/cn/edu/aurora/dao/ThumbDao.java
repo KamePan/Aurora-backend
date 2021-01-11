@@ -1,6 +1,5 @@
 package cn.edu.aurora.dao;
 
-import cn.edu.aurora.entity.Image;
 import cn.edu.aurora.entity.Thumb;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -19,6 +18,11 @@ public class ThumbDao {
         Query query = new Query(Criteria.where("name").is(name));
         Thumb thumb = mongoTemplate.findOne(query, Thumb.class);
         return thumb;
+    }
+
+    public void insertThumb(Thumb thumb) {
+        System.out.println(thumb);
+        mongoTemplate.insert(thumb, "Aurora.Thumb");
     }
 
 }

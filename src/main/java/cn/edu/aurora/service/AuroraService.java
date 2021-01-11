@@ -7,6 +7,7 @@ import cn.edu.aurora.dao.ThumbDao;
 import cn.edu.aurora.entity.Feature;
 import cn.edu.aurora.entity.Image;
 import cn.edu.aurora.entity.Meta;
+import cn.edu.aurora.entity.Thumb;
 import cn.edu.aurora.util.ImageUtil;
 import cn.edu.aurora.util.KeogramUtil;
 import cn.edu.aurora.vo.AuroraVO;
@@ -74,8 +75,12 @@ public class AuroraService {
 
         String srcfeat = ImageUtil.produceFingerPrint(pic);
         List<Feature> features = featureDao.findAllFeatures();
+
         // 根据相关值进行排序
         features.sort(Comparator.comparingInt((Feature o) -> ImageUtil.hammingDistance(srcfeat, o.getFeature())));
+        for (Feature feature : features) {
+            System.out.println(ImageUtil.hammingDistance(srcfeat, feature.getFeature()));
+        }
         int size = features.size();
         for (int i = size - 1; i >= 0; i--) {
             if (ImageUtil.hammingDistance(srcfeat, features.get(i).getFeature()) >= 10) { //大于 10 说明完全不匹配
@@ -96,6 +101,7 @@ public class AuroraService {
                     .setManualtype(meta.getManualtype())
                     .setThumb(encoder.encode(thumbBytes))
                     .setSimilarity(ImageUtil.hammingDistance(srcfeat, feature.getFeature()));
+            System.out.println(ImageUtil.hammingDistance(srcfeat, feature.getFeature()));
             auroraList.add(aurora);
         }
         return auroraList;
@@ -114,10 +120,9 @@ public class AuroraService {
         // 通过 Keogram 对象列表得到通过 keogram 中的条列生成的图像，每个 keogram 对象都有 440 个像素点组成的 keogram 列表属性
         BufferedImage keogramList = KeogramUtil.getKeogram(keogramlist);
         // 使用 BufferedImage 类型的数据流生成图像
-        ByteArrayOutputStream keo=new ByteArrayOutputStream();
+        ByteArrayOutputStream keo = new ByteArrayOutputStream();
         ImageIO.write(keogramList, "jpg",keo);
         byte[] keogrambyte = keo.toByteArray();
-        //System.out.println(Arrays.toString(keogrambyte));
 
         return new BASE64Encoder().encode(keogrambyte);
     }
@@ -146,4 +151,39 @@ public class AuroraService {
         }
         return thumbVOList;
     }
+
+    public List<ImageVO> findImageWithOption(String start, String end, String band, String type) throws IOException {
+        List<ImageVO> imageVOList = new ArrayList<>();
+        List<Meta> metaList = metaDao.findMetaNeedsMarkedWithOption(start, end, band);
+        // 根据查询结果配置返回列表
+        for (Meta meta: metaList) {
+            ImageVO imageVO = new ImageVO();
+            BASE64Encoder encoder = new BASE64Encoder();
+            byte[] imageBytes = imageDao.findImageByName(meta.getName()).getRawpic().getData();
+            imageVO.setName(meta.getName())
+                    .setBand(meta.getBand())
+                    .setTime(meta.getTime())
+                    .setManualtype(meta.getManualtype())
+                    .setImage(encoder.encode(imageBytes));
+            imageVOList.add(imageVO);
+        }
+        return imageVOList;
+    }
+
+    public void insertImage(Image image) {
+        imageDao.insertImage(image);
+    }
+
+    public void insertThumb(Thumb thumb) {
+        thumbDao.insertThumb(thumb);
+    }
+
+    public void insertFeature(Feature feature) {
+        featureDao.insertFeature(feature);
+    }
+
+    public void insertMeta(Meta meta) {
+        metaDao.insertMeta(meta);
+    }
+
 }

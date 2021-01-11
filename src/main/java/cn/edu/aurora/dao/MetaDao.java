@@ -1,9 +1,6 @@
 package cn.edu.aurora.dao;
 
 import cn.edu.aurora.entity.Meta;
-import cn.edu.aurora.util.KeogramUtil;
-import com.mongodb.DBObject;
-import org.apache.logging.log4j.message.StringFormattedMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -30,10 +27,39 @@ public class MetaDao {
      */
     public List<Meta> findMetaWithOption(String start, String end, String band, String type) throws IOException {
         Query query = new Query();
-        if (start != null) query.addCriteria(Criteria.where("time").gte(start));
-        if (end != null) query.addCriteria(Criteria.where("time").lte(end));
+        Criteria criteria = new Criteria();
+        if (start != null && end != null) {
+            criteria.andOperator(criteria.where("time").gte(start),
+                    criteria.where("time").lte(end));
+        } else if (start != null) {
+            criteria.and("time").gte(start);
+        } else if (end != null) {
+            criteria.and("time").lte(end);
+        }
+        query.addCriteria(criteria);
+
         if (band != null) query.addCriteria(Criteria.where("band").is(band));
         if (type != null) query.addCriteria(Criteria.where("type").is(type));
+
+        List<Meta> metas = mongoTemplate.find(query, Meta.class);
+
+        return metas;
+    }
+
+    public List<Meta> findMetaNeedsMarkedWithOption(String start, String end, String band) throws IOException {
+        Query query = new Query();
+        Criteria criteria = new Criteria();
+        if (start != null && end != null) {
+            criteria.andOperator(criteria.where("time").gte(start),
+                    criteria.where("time").lte(end));
+        } else if (start != null) {
+            criteria.and("time").gte(start);
+        } else if (end != null) {
+            criteria.and("time").lte(end);
+        }
+        query.addCriteria(criteria);
+        if (band != null) query.addCriteria(Criteria.where("band").is(band));
+        query.addCriteria(Criteria.where("type").exists(false));
 
         List<Meta> metas = mongoTemplate.find(query, Meta.class);
 
@@ -43,6 +69,16 @@ public class MetaDao {
     public Meta findMetaByName(String name) {
         Query query = new Query(Criteria.where("name").is(name));
         return mongoTemplate.findOne(query, Meta.class);
+    }
+
+    public void insertMeta(Meta meta) {
+        System.out.println(meta);
+        Meta insert = mongoTemplate.insert(meta, "Aurora.Meta");
+        System.out.println(insert);
+        System.out.println(mongoTemplate.find(new Query(Criteria.where("name").is("123")), Meta.class));
+        //System.out.println(mongoTemplate.findOne(new Query(Criteria.where("name").is("123")), Meta.class));
+        //System.out.println(mongoTemplate.findOne(new Query(Criteria.where("name").is("123")), Meta.class));
+
     }
 
 }

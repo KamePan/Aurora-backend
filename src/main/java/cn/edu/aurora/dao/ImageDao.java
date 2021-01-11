@@ -26,4 +26,8 @@ public class ImageDao {
         Query query = new Query(Criteria.where("name").is(name));
         return mongoTemplate.findOne(query, Image.class);
     }
+
+    public void insertImage(Image image) {
+        mongoTemplate.insert(image, "Aurora.Image");
+    }
 }
