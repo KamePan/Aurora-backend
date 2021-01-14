@@ -16,6 +16,10 @@ import cn.edu.aurora.vo.ImageVO;
 import cn.edu.aurora.vo.ThumbVO;
 import com.mongodb.DBObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import sun.misc.BASE64Encoder;
 
@@ -29,6 +33,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+@CacheConfig(cacheNames = "Aurora")
 @Service
 public class AuroraService {
 
@@ -44,33 +49,13 @@ public class AuroraService {
     @Autowired
     private ImageDao imageDao;
 
-    public List<AuroraVO> findAuroraWithOption(String start, String end, String band, String type) throws IOException {
-        List<AuroraVO> auroraList = new ArrayList<>();
-        List<Meta> metaList = metaDao.findMetaWithOption(start, end, band, type);
-        // 根据查询结果配置返回列表
-        for (Meta meta: metaList) {
-            AuroraVO aurora = new AuroraVO();
-            BASE64Encoder encoder = new BASE64Encoder();
-            byte[] thumbBytes = thumbDao.findThumbByName(meta.getName()).getThumb().getData();
-            byte[] imageBytes = imageDao.findImageByName(meta.getName()).getRawpic().getData();
-            aurora.setName(meta.getName())
-                    .setBand(meta.getBand())
-                    .setTime(meta.getTime())
-                    .setManualtype(meta.getManualtype())
-                    .setThumb(encoder.encode(thumbBytes))
-                    .setRawpic(encoder.encode(imageBytes));
-            auroraList.add(aurora);
-        }
-        System.out.println(auroraList);
-        return auroraList;
-    }
-
     /**
      * 根据海明距离得到排序以后的 feature 列表
      * @param pic 图片字节流参数
      * @return
      * @throws IOException
      */
+
     public List<FeatureVO> findAuroraLikeSomePic(byte[] pic) throws IOException {
 
         String srcfeat = ImageUtil.produceFingerPrint(pic);
@@ -127,6 +112,7 @@ public class AuroraService {
         return new BASE64Encoder().encode(keogrambyte);
     }
 
+    @Cacheable(key = "targetClass + #name")
     public ImageVO findImageByName(String name) {
         Image image = imageDao.findImageByName(name);
         ImageVO imageVO = new ImageVO();
@@ -170,7 +156,13 @@ public class AuroraService {
         return imageVOList;
     }
 
+    @CacheEvict(key = "targetClass + #p0.name")
     public void updateMetaByName(Meta meta) {
         metaDao.updateMetaByName(meta);
+    }
+
+    @CacheEvict(key = "targetClass + #name")
+    public void insertImage(byte[] bytes, String name) throws IOException {
+        ImageUtil.handleImage(bytes, name);
     }
 }

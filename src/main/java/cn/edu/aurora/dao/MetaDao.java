@@ -75,8 +75,6 @@ public class MetaDao {
     public void updateMetaByName(Meta meta) {
         Query query = new Query(Criteria.where("name").is(meta.getName()));
         Update update = new Update().set("manualtype", meta.getManualtype());
-        System.out.println(meta);
         mongoTemplate.upsert(query, update, "Aurora.Meta");
-        System.out.println(mongoTemplate.find(query, Meta.class));
     }
 }

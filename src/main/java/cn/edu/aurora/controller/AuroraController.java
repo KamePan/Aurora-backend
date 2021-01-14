@@ -18,10 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -111,7 +107,7 @@ public class AuroraController {
             byte[] bytes = pic.getBytes();
             String name = originalFilename.substring(0, originalFilename.lastIndexOf('.'));
             // 得到图片的名字，如果名字不符合规范，则抛出异常，否则解析改名字
-            ImageUtil.handleImage(bytes, name);
+            auroraService.insertImage(bytes, name);
         } catch (IOException e) {
             e.printStackTrace();
         }
